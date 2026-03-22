@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block title %}Оформлення замовлення — Heizenberg Ice{% endblock %}
+
+{% block content %}
+<section class="py-12 px-4 min-h-screen">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="font-display text-5xl text-white tracking-widest mb-8 text-center">ОФОРМЛЕННЯ ЗАМОВЛЕННЯ</h1>
+        <div class="w-24 h-1 bg-hz-accent mx-auto mb-12"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <!-- Order Form -->
+            <div class="lg:col-span-3">
+                <form method="post" action="{% url 'orders:checkout' %}" class="space-y-6"
+                      x-data="{
+                          deliveryType: '{{ form_data.delivery_type|default:"delivery"|escapejs }}',
+                          address: '{{ form_data.address|default:""|escapejs }}',
+                          zoneId: '{{ form_data.zone_id|default:""|escapejs }}',
+                          deliveryPrice: 0,
+                          updateDeliveryPrice() {
+                              const sel = document.querySelector('select[name=zone_id]');
+                              if (sel && sel.selectedOptions[0]) {
+                                  this.deliveryPrice = parseFloat(sel.selectedOptions[0].dataset.price || 0);
+                              }
+                          }
+                      }"
+                      x-init="updateDeliveryPrice()">
+                    {% csrf_token %}
+
+                    <!-- Contact Info -->
+                    <div class="bg-hz-green-900/30 border border-hz-green-800/50 rounded-lg p-6">
+                        <h3 class="font-display text-2xl text-white tracking-wider mb-4">КОНТАКТНІ ДАНІ</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <input type="text" name="name" placeholder="Ваше ім'я *" required
+                                       value="{{ form_data.name|default:'' }}"
+                                       class="w-full bg-hz-dark border border-hz-green-800 rounded px-4 py-3 text-white placeholder-gray-600 focus:border-hz-accent focus:outline-none transition-colors">
+                                {% if errors.name %}<p class="text-red-400 text-sm mt-1">{{ errors.name }}</p>{% endif %}
+                            </div>
+                            <div x-data="{
+                                phone: '{{ form_data.phone|default:""|escapejs }}',
+                                formatPhone() {
+                                    let d = this.phone.replace(/\D/g, '');
+                                    if (d.startsWith('380')) d = d;
+                                    else if (d.startsWith('80')) d = '3' + d;
+                                    else if (d.startsWith('0')) d = '38' + d;
+                                    else if (!d.startsWith('380')) d = '380' + d;
+                                    d = d.slice(0, 12);
+                                    let f = '+';
+                                    if (d.length > 0) f += d.slice(0, 3);
+                                    if (d.length > 3) f += ' (' + d.slice(3, 5) + ')';
+                                    if (d.length > 5) f += ' ' + d.slice(5, 8);
+                                    if (d.length > 8) f += '-' + d.slice(8, 10);
+                                    if (d.length > 10) f += '-' + d.slice(10, 12);
+                                    this.phone = f;
+                                }
+                            }">
+                                <input type="tel" name="phone" placeholder="+380 (XX) XXX-XX-XX" required
+                                       x-model="phone" @input="formatPhone()"
+                                       pattern="\\+380 \\(\\d{2}\\) \\d{3}-\\d{2}-\\d{2}"
+                                       class="w-full bg-hz-dark border border-hz-green-800 rounded px-4 py-3 text-white placeholder-gray-600 focus:border-hz-accent focus:outline-none transition-colors">
+                                {% if errors.phone %}<p class="text-red-400 text-sm mt-1">{{ errors.phone }}</p>{% endif %}
+                            </div>
+                            <div>
+                                <input type="email" name="email" placeholder="Email (необов'язково)"
+                                       value="{{ form_data.email|default:'' }}"
+                                       class="w-full bg-hz-dark border border-hz-green-800 rounded px-4 py-3 text-white placeholder-gray-600 focus:border-hz-accent focus:outline-none transition-colors">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Type -->
+                    <div class="bg-hz-green-900/30 border border-hz-green-800/50 rounded-lg p-6">
+                        <h3 class="font-display text-2xl text-white tracking-wider mb-4">ДОСТАВКА</h3>
+                        <input type="hidden" name="delivery_type" :value="deliveryType">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="cursor-pointer rounded-lg p-4 text-center transition-colors"
+                                 @click="deliveryType = 'delivery'"
+                                 :style="deliveryType === 'delivery' ? 'border: 2px solid #00ff41' : 'border: 2px solid #1a4a1a'">
+                                <svg class="w-8 h-8 mx-auto mb-2 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                     :style="deliveryType === 'delivery' ? 'color: #00ff41' : 'color: #9ca3af'">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>
+                                </svg>
+                                <span class="text-white text-sm font-bold">Доставка</span>
+                            </div>
+                            <div class="cursor-pointer rounded-lg p-4 text-center transition-colors"
+                                 @click="deliveryType = 'pickup'"
+                                 :style="deliveryType === 'pickup' ? 'border: 2px solid #00ff41' : 'border: 2px solid #1a4a1a'">
+                                <svg class="w-8 h-8 mx-auto mb-2 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                     :style="deliveryType === 'pickup' ? 'color: #00ff41' : 'color: #9ca3af'">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                                <span class="text-white text-sm font-bold">Самовивіз</span>
+                            </div>
+                        </div>
+
+                        <!-- Delivery address -->
+                        <div x-show="deliveryType === 'delivery'" x-transition class="space-y-4">
+                            <div>
+                                <input type="text" name="address" placeholder="Адреса доставки" x-model="address"
+                                       value="{{ form_data.address|default:'' }}"
+                                       class="w-full bg-hz-dark border border-hz-green-800 rounded px-4 py-3 text-white placeholder-gray-600 focus:border-hz-accent focus:outline-none transition-colors">
+                                {% if errors.address %}<p class="text-red-400 text-sm mt-1">{{ errors.address }}</p>{% endif %}
+                            </div>
+
+                            <!-- Zone selection -->
+                            <div>
+                                <label class="text-gray-400 text-sm mb-2 block">Зона доставки</label>
+                                <select name="zone_id" x-model="zoneId" @change="updateDeliveryPrice()"
+                                        class="w-full bg-hz-dark border border-hz-green-800 rounded px-4 py-3 text-white focus:border-hz-accent focus:outline-none transition-colors">
+                                    <option value="">Оберіть зону</option>
+                                    {% for zone in zones %}
+                                    <option value="{{ zone.id }}" data-price="{{ zone.delivery_price }}" data-min="{{ zone.min_order_amount }}">
+                                        {{ zone.name }} — {{ zone.delivery_price }} ₴
+                                        {% if zone.min_order_amount > 0 %}(мін. {{ zone.min_order_amount }} ₴){% endif %}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if errors.zone %}<p class="text-red-400 text-sm mt-1">{{ errors.zone }}</p>{% endif %}
+                                {% if errors.min_order %}<p class="text-red-400 text-sm mt-1">{{ errors.min_order }}</p>{% endif %}
+                            </div>
+
+                            <div x-show="deliveryPrice > 0" class="text-hz-accent text-sm">
+                                Вартість доставки: <span x-text="deliveryPrice"></span> ₴
+                            </div>
+                        </div>
+
+                        <!-- Pickup info -->
+                        <div x-show="deliveryType === 'pickup'" x-transition>
+                            {% if settings.address_pickup %}
+                            <div class="bg-hz-dark/50 rounded p-4 text-gray-400 text-sm">
+                                <p class="font-bold text-white mb-1">Адреса самовивозу:</p>
+                                <p>{{ settings.address_pickup }}</p>
+                                {% if settings.working_hours %}
+                                <p class="mt-2">Графік: {{ settings.working_hours }}</p>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Payment -->
+                    <div class="bg-hz-green-900/30 border border-hz-green-800/50 rounded-lg p-6">
+                        <h3 class="font-display text-2xl text-white tracking-wider mb-4">ОПЛАТА</h3>
+                        <div class="space-y-3">
+                            <label class="flex items-center space-x-3 cursor-pointer p-3 border border-hz-green-800/50 rounded-lg hover:border-hz-green-700 transition-colors">
+                                <input type="radio" name="payment_method" value="cash" checked class="text-hz-accent">
+                                <span class="text-white">Готівка при отриманні</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer p-3 border border-hz-green-800/50 rounded-lg hover:border-hz-green-700 transition-colors">
+                                <input type="radio" name="payment_method" value="monobank" class="text-hz-accent">
+                                <span class="text-white">Monobank (онлайн оплата)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Comment -->
+                    <div class="bg-hz-green-900/30 border border-hz-green-800/50 rounded-lg p-6">
+                        <textarea name="comment" rows="3" placeholder="Коментар до замовлення"
+                                  class="w-full bg-hz-dark border border-hz-green-800 rounded px-4 py-3 text-white placeholder-gray-600 focus:border-hz-accent focus:outline-none transition-colors resize-none">{{ form_data.comment|default:'' }}</textarea>
+                    </div>
+
+                    <button type="submit"
+                            class="w-full bg-hz-accent text-hz-dark font-bold uppercase tracking-widest py-4 rounded text-lg hover:bg-green-400 transition-all duration-300 border-glow">
+                        Підтвердити замовлення
+                    </button>
+                </form>
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="lg:col-span-2">
+                <div class="bg-hz-green-900/30 border border-hz-green-800/50 rounded-lg p-6 sticky top-20">
+                    <h3 class="font-display text-2xl text-white tracking-wider mb-4">ВАШЕ ЗАМОВЛЕННЯ</h3>
+
+                    <div id="cart-content" class="space-y-3 mb-4">
+                        {% include 'partials/cart_dropdown.html' %}
+                    </div>
+
+                    <a href="{% url 'pages:index' %}#catalog" class="block text-center text-hz-accent text-sm hover:underline mt-4">
+                        ← Продовжити покупки
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

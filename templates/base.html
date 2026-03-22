@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Heizenberg Ice — Кристально чистий лід{% endblock %}</title>
+
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicon-16.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
+
+    {% if seo %}
+    <meta name="description" content="{{ seo.description }}">
+    <meta property="og:title" content="{{ seo.title }}">
+    <meta property="og:description" content="{{ seo.description }}">
+    {% if seo.og_image %}<meta property="og:image" content="{{ seo.og_image.url }}">{% endif %}
+    <meta property="og:type" content="website">
+    {% else %}
+    <meta name="description" content="Heizenberg Ice — виробництво та доставка кристально чистого льоду у вашому місті.">
+    <meta property="og:title" content="Heizenberg Ice — Кристально чистий лід">
+    <meta property="og:description" content="Виробництво та доставка кристально чистого льоду.">
+    {% endif %}
+
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:locale" content="uk_UA">
+    <meta property="og:site_name" content="Heizenberg Ice">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Heizenberg Ice">
+
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+    <!-- Tailwind CSS (CDN for dev, build for prod) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'hz-green': {
+                            50: '#f0fdf0',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#1a7a1a',
+                            700: '#1a5a1a',
+                            800: '#1a4a1a',
+                            900: '#0f2d0f',
+                            950: '#071a07',
+                        },
+                        'hz-dark': '#0a1f0a',
+                        'hz-accent': '#00ff41',
+                    },
+                    fontFamily: {
+                        'mono': ['JetBrains Mono', 'Fira Code', 'monospace'],
+                        'display': ['Bebas Neue', 'Impact', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('htmx:configRequest', function(evt) {
+            evt.detail.headers['X-CSRFToken'] =
+                document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
+        });
+    </script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js" integrity="sha384-X9kJyAubVxnP0hcA+AMMs21U445qsnqhnUF8EBlEpP3a42Kh/JwWjlv2ZcvGfphb" crossorigin="anonymous"></script>
+
+    {% block extra_head %}{% endblock %}
+
+    <style>
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #0a1f0a;
+            color: #e5e7eb;
+        }
+        .font-display {
+            font-family: 'Bebas Neue', Impact, sans-serif;
+        }
+        .text-glow {
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.5), 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+        .border-glow {
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.2), inset 0 0 10px rgba(0, 255, 65, 0.05);
+        }
+        .card-hover:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+            transform: translateY(-2px);
+        }
+        .hz-gradient {
+            background: linear-gradient(135deg, #0a1f0a 0%, #1a4a1a 50%, #0a1f0a 100%);
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Schema.org hidden data */
+        .sr-only {
+            position: absolute; width: 1px; height: 1px; padding: 0;
+            margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
+            white-space: nowrap; border-width: 0;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-hz-dark text-gray-200 antialiased">
+    {% include 'partials/header.html' %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include 'partials/footer.html' %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

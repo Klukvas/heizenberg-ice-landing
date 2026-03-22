@@ -1,0 +1,423 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="relative min-h-[90vh] flex items-center justify-center hz-gradient overflow-hidden">
+    <!-- Chemical formula background decoration -->
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute top-10 left-10 text-[200px] font-display text-hz-accent">H&#x2082;O</div>
+        <div class="absolute bottom-10 right-10 text-[150px] font-display text-hz-accent">ICE</div>
+    </div>
+
+    <div class="relative z-10 text-center px-4">
+        <h1 class="font-display text-6xl md:text-8xl lg:text-9xl text-white tracking-widest mb-4 text-glow">
+            HEIZENBERG ICE
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-400 font-mono mb-2">Кристально чистий. Бездоганна якість.</p>
+        <p class="text-lg text-hz-accent font-mono mb-8">99.1% чистоти</p>
+        <a href="#catalog" class="inline-block bg-hz-accent text-hz-dark font-bold uppercase tracking-widest px-8 py-4 rounded hover:bg-green-400 transition-all duration-300 text-lg border-glow">
+            Замовити лід
+        </a>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <svg class="w-6 h-6 text-hz-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+        </svg>
+    </div>
+</section>
+
+<!-- Catalog -->
+<section id="catalog" class="py-20 px-4" x-data="{ activeCategory: '' }">
+    <div class="max-w-7xl mx-auto">
+        <h2 class="font-display text-5xl md:text-6xl text-center text-white tracking-widest mb-4">КАТАЛОГ</h2>
+        <div class="w-24 h-1 bg-hz-accent mx-auto mb-12"></div>
+
+        <!-- Category filters -->
+        {% if categories %}
+        <div class="flex flex-wrap justify-center gap-3 mb-12">
+            <button @click="activeCategory = ''"
+                    :class="activeCategory === '' ? 'bg-hz-accent text-hz-dark' : 'bg-hz-green-900/50 text-gray-300 hover:bg-hz-green-800'"
+                    class="px-6 py-2 rounded-full text-sm uppercase tracking-wider font-bold transition-all duration-300">
+                Усі
+            </button>
+            {% for cat in categories %}
+            <button @click="activeCategory = '{{ cat.slug }}'"
+                    :class="activeCategory === '{{ cat.slug }}' ? 'bg-hz-accent text-hz-dark' : 'bg-hz-green-900/50 text-gray-300 hover:bg-hz-green-800'"
+                    class="px-6 py-2 rounded-full text-sm uppercase tracking-wider font-bold transition-all duration-300">
+                {{ cat.name }}
+            </button>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Products grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for product in products %}
+            <div x-show="activeCategory === '' || activeCategory === '{{ product.category.slug }}'"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100">
+                {% include 'partials/product_card.html' with product=product %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- How we work -->
+<section class="py-20 px-4 bg-hz-green-900/20">
+    <div class="max-w-7xl mx-auto">
+        <h2 class="font-display text-5xl md:text-6xl text-center text-white tracking-widest mb-4">ЯК МИ ПРАЦЮЄМО</h2>
+        <div class="w-24 h-1 bg-hz-accent mx-auto mb-16"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- Step 1 -->
+            <div class="text-center group">
+                <div class="w-20 h-20 mx-auto mb-4 bg-hz-green-800/50 rounded-full flex items-center justify-center border-2 border-hz-green-700 group-hover:border-hz-accent transition-colors duration-300">
+                    <svg class="w-10 h-10 text-hz-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/>
+                    </svg>
+                </div>
+                <div class="font-display text-4xl text-hz-accent mb-2">01</div>
+                <h3 class="font-display text-xl text-white tracking-wider mb-2">ЗАМОВЛЯЄШ</h3>
+                <p class="text-gray-500 text-sm">Обираєш товар та оформлюєш замовлення на сайті</p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="text-center group">
+                <div class="w-20 h-20 mx-auto mb-4 bg-hz-green-800/50 rounded-full flex items-center justify-center border-2 border-hz-green-700 group-hover:border-hz-accent transition-colors duration-300">
+                    <svg class="w-10 h-10 text-hz-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="font-display text-4xl text-hz-accent mb-2">02</div>
+                <h3 class="font-display text-xl text-white tracking-wider mb-2">ПІДТВЕРДЖУЄМО</h3>
+                <p class="text-gray-500 text-sm">Ми зв'язуємось з тобою та підтверджуємо замовлення</p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="text-center group">
+                <div class="w-20 h-20 mx-auto mb-4 bg-hz-green-800/50 rounded-full flex items-center justify-center border-2 border-hz-green-700 group-hover:border-hz-accent transition-colors duration-300">
+                    <svg class="w-10 h-10 text-hz-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>
+                    </svg>
+                </div>
+                <div class="font-display text-4xl text-hz-accent mb-2">03</div>
+                <h3 class="font-display text-xl text-white tracking-wider mb-2">ДОСТАВЛЯЄМО</h3>
+                <p class="text-gray-500 text-sm">Привозимо лід у зручний для тебе час та місце</p>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="text-center group">
+                <div class="w-20 h-20 mx-auto mb-4 bg-hz-green-800/50 rounded-full flex items-center justify-center border-2 border-hz-green-700 group-hover:border-hz-accent transition-colors duration-300">
+                    <svg class="w-10 h-10 text-hz-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="font-display text-4xl text-hz-accent mb-2">04</div>
+                <h3 class="font-display text-xl text-white tracking-wider mb-2">КАЙФУЄШ</h3>
+                <p class="text-gray-500 text-sm">Насолоджуєшся кристально чистим льодом</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Delivery zones -->
+<section id="delivery" class="py-20 px-4">
+    <div class="max-w-7xl mx-auto">
+        <h2 class="font-display text-5xl md:text-6xl text-center text-white tracking-widest mb-4">ЗОНИ ДОСТАВКИ</h2>
+        <div class="w-24 h-1 bg-hz-accent mx-auto mb-12"></div>
+
+        <div class="bg-hz-green-900/30 border border-hz-green-800/50 rounded-lg overflow-hidden">
+            <div id="delivery-map" class="w-full h-[500px]"></div>
+        </div>
+
+        <!-- Zone legend -->
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for zone in zones %}
+            <div class="flex items-center space-x-3 bg-hz-green-900/20 p-3 rounded-lg border border-hz-green-800/30">
+                <div class="w-4 h-4 rounded-full flex-shrink-0" style="background-color: {{ zone.color }}"></div>
+                <div>
+                    <span class="text-white text-sm font-bold">{{ zone.name }}</span>
+                    <span class="text-gray-400 text-xs ml-2">Доставка: {{ zone.delivery_price }} &#x20b4;</span>
+                    {% if zone.min_order_amount > 0 %}
+                    <span class="text-gray-500 text-xs ml-1">(мін. {{ zone.min_order_amount }} &#x20b4;)</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- About us -->
+<section id="about" class="py-20 px-4 bg-hz-green-900/20">
+    <div class="max-w-4xl mx-auto text-center">
+        <h2 class="font-display text-5xl md:text-6xl text-white tracking-widest mb-4">ПРО НАС</h2>
+        <div class="w-24 h-1 bg-hz-accent mx-auto mb-12"></div>
+
+        <div class="space-y-6 text-gray-300 text-lg leading-relaxed">
+            <p>
+                <span class="text-hz-accent font-bold">Heizenberg Ice</span> — це виробництво кристально чистого
+                льоду найвищої якості. Ми використовуємо багатоступеневу систему фільтрації води та
+                контролюємо кожен етап виробництва.
+            </p>
+            <p>
+                Наш лід — прозорий, без домішок, повільно тане і не псує смак напоїв.
+                Ідеальний для барів, ресторанів, кейтерингу та приватних заходів.
+            </p>
+            <p class="text-hz-accent font-display text-3xl tracking-wider mt-8">
+                "SAY MY NAME"
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="py-20 px-4">
+    <div class="max-w-3xl mx-auto">
+        <h2 class="font-display text-5xl md:text-6xl text-center text-white tracking-widest mb-4">FAQ</h2>
+        <div class="w-24 h-1 bg-hz-accent mx-auto mb-12"></div>
+
+        <div class="space-y-3" x-data="{ open: null }">
+            {% for faq in faqs %}
+            <div class="border border-hz-green-800/50 rounded-lg overflow-hidden">
+                <button @click="open = open === {{ faq.id }} ? null : {{ faq.id }}"
+                        class="w-full flex items-center justify-between p-5 text-left hover:bg-hz-green-900/30 transition-colors duration-200">
+                    <span class="text-white font-bold pr-4">{{ faq.question }}</span>
+                    <svg class="w-5 h-5 text-hz-accent flex-shrink-0 transition-transform duration-300"
+                         :class="open === {{ faq.id }} ? 'rotate-180' : ''"
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div x-show="open === {{ faq.id }}" x-collapse>
+                    <div class="px-5 pb-5 text-gray-400 leading-relaxed">
+                        {{ faq.answer|linebreaksbr }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Schema.org FAQPage -->
+        {% if faqs %}
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {% for faq in faqs %}
+                {
+                    "@type": "Question",
+                    "name": "{{ faq.question|escapejs }}",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "{{ faq.answer|escapejs }}"
+                    }
+                }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ]
+        }
+        </script>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Latest blog posts -->
+{% if latest_posts %}
+<section class="py-20 px-4">
+    <div class="max-w-7xl mx-auto">
+        <h2 class="font-display text-5xl md:text-6xl text-center text-white tracking-widest mb-4">БЛОГ</h2>
+        <div class="w-24 h-1 bg-hz-accent mx-auto mb-12"></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {% for post in latest_posts %}
+            <a href="{{ post.get_absolute_url }}" class="bg-hz-green-900/30 border border-hz-green-800/50 rounded-lg overflow-hidden card-hover transition-all duration-300 block">
+                {% if post.image %}
+                <div class="aspect-video overflow-hidden">
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy">
+                </div>
+                {% endif %}
+                <div class="p-5">
+                    {% if post.published_at %}
+                    <time class="text-hz-accent text-xs font-mono">{{ post.published_at|date:'d.m.Y' }}</time>
+                    {% endif %}
+                    <h3 class="font-display text-xl text-white tracking-wide mt-2 hover:text-hz-accent transition-colors">{{ post.title }}</h3>
+                    <p class="text-gray-400 text-sm mt-2 line-clamp-2">{{ post.excerpt }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-8">
+            <a href="{% url 'blog:post-list' %}" class="inline-block border border-hz-accent text-hz-accent px-8 py-3 rounded font-bold uppercase tracking-widest hover:bg-hz-accent hover:text-hz-dark transition-all duration-300">
+                Усі статті
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Contacts -->
+<section id="contacts" class="py-20 px-4 bg-hz-green-900/20">
+    <div class="max-w-4xl mx-auto">
+        <h2 class="font-display text-5xl md:text-6xl text-center text-white tracking-widest mb-4">КОНТАКТИ</h2>
+        <div class="w-24 h-1 bg-hz-accent mx-auto mb-12"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <!-- Contact info -->
+            <div class="space-y-6">
+                {% if settings.phone %}
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-hz-green-800/50 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-hz-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Телефон</p>
+                        <a href="tel:{{ settings.phone }}" class="text-white hover:text-hz-accent transition-colors">{{ settings.phone }}</a>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if settings.address_pickup %}
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-hz-green-800/50 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-hz-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Адреса самовивозу</p>
+                        <p class="text-white">{{ settings.address_pickup }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if settings.working_hours %}
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-hz-green-800/50 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-hz-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">Графік роботи</p>
+                        <p class="text-white">{{ settings.working_hours }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if settings.instagram_url %}
+                <a href="{{ settings.instagram_url }}" target="_blank" rel="noopener"
+                   class="inline-flex items-center space-x-3 bg-hz-green-800/30 hover:bg-hz-green-800/60 px-6 py-3 rounded-lg transition-colors duration-300">
+                    <svg class="w-6 h-6 text-hz-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                    <span class="text-white">Ми в Instagram</span>
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Contact form -->
+            <div class="bg-hz-green-900/30 border border-hz-green-800/50 rounded-lg p-6">
+                <h3 class="font-display text-2xl text-white tracking-wider mb-6">НАПИСАТИ НАМ</h3>
+                <div id="contact-form-wrapper">
+                    <form hx-post="{% url 'pages:contact-submit' %}" hx-target="#contact-form-wrapper" hx-swap="innerHTML"
+                          class="space-y-4">
+                        {% csrf_token %}
+                        <div>
+                            <input type="text" name="name" placeholder="Ваше ім'я" required
+                                   class="w-full bg-hz-dark border border-hz-green-800 rounded px-4 py-3 text-white placeholder-gray-600 focus:border-hz-accent focus:outline-none transition-colors">
+                        </div>
+                        <div>
+                            <input type="tel" name="phone" placeholder="Телефон" required
+                                   class="w-full bg-hz-dark border border-hz-green-800 rounded px-4 py-3 text-white placeholder-gray-600 focus:border-hz-accent focus:outline-none transition-colors">
+                        </div>
+                        <div>
+                            <textarea name="message" rows="4" placeholder="Повідомлення" required
+                                      class="w-full bg-hz-dark border border-hz-green-800 rounded px-4 py-3 text-white placeholder-gray-600 focus:border-hz-accent focus:outline-none transition-colors resize-none"></textarea>
+                        </div>
+                        <button type="submit"
+                                class="w-full bg-hz-accent text-hz-dark font-bold uppercase tracking-widest py-3 rounded hover:bg-green-400 transition-all duration-300">
+                            Надіслати
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const mapEl = document.getElementById('delivery-map');
+    if (!mapEl) return;
+
+    // Initialize Leaflet map centered on Kyiv (adjust as needed)
+    const map = L.map('delivery-map', {
+        scrollWheelZoom: false,
+    }).setView([50.4501, 30.5234], 11);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Load zones from API
+    fetch('/api/zones/')
+        .then(r => r.json())
+        .then(data => {
+            const zones = data.results || data;
+            zones.forEach(zone => {
+                if (zone.polygon && zone.polygon.coordinates) {
+                    const coords = zone.polygon.coordinates[0].map(c => [c[1], c[0]]);
+                    const polygon = L.polygon(coords, {
+                        color: zone.color,
+                        fillColor: zone.color,
+                        fillOpacity: 0.3,
+                        weight: 2,
+                    }).addTo(map);
+
+                    const popupDiv = document.createElement('div');
+                    popupDiv.className = 'text-center';
+                    const nameEl = document.createElement('strong');
+                    nameEl.textContent = zone.name;
+                    popupDiv.appendChild(nameEl);
+                    popupDiv.appendChild(document.createElement('br'));
+                    const priceText = document.createTextNode('Доставка: ' + zone.delivery_price + ' ₴');
+                    popupDiv.appendChild(priceText);
+                    if (zone.min_order_amount > 0) {
+                        popupDiv.appendChild(document.createElement('br'));
+                        const minText = document.createTextNode('Мін. замовлення: ' + zone.min_order_amount + ' ₴');
+                        popupDiv.appendChild(minText);
+                    }
+                    polygon.bindPopup(popupDiv);
+                }
+            });
+
+            // Fit map to zones
+            if (zones.length > 0) {
+                const allCoords = [];
+                zones.forEach(zone => {
+                    if (zone.polygon && zone.polygon.coordinates) {
+                        zone.polygon.coordinates[0].forEach(c => allCoords.push([c[1], c[0]]));
+                    }
+                });
+                if (allCoords.length > 0) {
+                    map.fitBounds(allCoords);
+                }
+            }
+        })
+        .catch(err => console.error('Error loading zones:', err));
+});
+</script>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Дякуємо за замовлення — Heizenberg Ice{% endblock %}
+
+{% block content %}
+<section class="py-20 px-4 min-h-screen flex items-center">
+    <div class="max-w-2xl mx-auto text-center">
+        <!-- Success icon -->
+        <div class="w-24 h-24 mx-auto mb-8 bg-hz-green-800/50 rounded-full flex items-center justify-center border-2 border-hz-accent">
+            <svg class="w-12 h-12 text-hz-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+
+        <h1 class="font-display text-5xl md:text-6xl text-white tracking-widest mb-4 text-glow">ДЯКУЄМО!</h1>
+        <p class="text-xl text-gray-400 mb-8">Ваше замовлення прийнято</p>
+
+        <!-- Order details -->
+        <div class="bg-hz-green-900/30 border border-hz-green-800/50 rounded-lg p-8 text-left mb-8">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-hz-green-800/50">
+                <span class="text-gray-400">Номер замовлення:</span>
+                <span class="font-display text-3xl text-hz-accent">#{{ order.id }}</span>
+            </div>
+
+            <div class="space-y-3 text-sm mb-6">
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Ім'я:</span>
+                    <span class="text-white">{{ order.name }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Телефон:</span>
+                    <span class="text-white">{{ order.phone }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Доставка:</span>
+                    <span class="text-white">{{ order.get_delivery_type_display }}</span>
+                </div>
+                {% if order.address %}
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Адреса:</span>
+                    <span class="text-white">{{ order.address }}</span>
+                </div>
+                {% endif %}
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Оплата:</span>
+                    <span class="text-white">{{ order.get_payment_method_display }}</span>
+                </div>
+            </div>
+
+            <!-- Order items -->
+            <div class="border-t border-hz-green-800/50 pt-4 mb-4">
+                {% for item in order_items %}
+                <div class="flex justify-between py-2 text-sm">
+                    <span class="text-gray-300">{{ item.product.name }} × {{ item.quantity }}</span>
+                    <span class="text-white">{{ item.subtotal }} ₴</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="border-t border-hz-green-800/50 pt-4 space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-400">Товари:</span>
+                    <span class="text-white">{{ order.total_price }} ₴</span>
+                </div>
+                {% if order.delivery_price > 0 %}
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-400">Доставка:</span>
+                    <span class="text-white">{{ order.delivery_price }} ₴</span>
+                </div>
+                {% endif %}
+                <div class="flex justify-between font-bold text-lg pt-2">
+                    <span class="text-white">Разом:</span>
+                    <span class="text-hz-accent">{{ order.grand_total }} ₴</span>
+                </div>
+            </div>
+        </div>
+
+        {% if order.payment_method == 'monobank' %}
+            {% if order.is_paid %}
+            <div class="bg-green-900/40 border border-green-600/50 rounded-lg p-4 mb-6 inline-flex items-center space-x-3">
+                <svg class="w-6 h-6 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="text-green-400 font-bold">Оплату отримано</span>
+            </div>
+            {% elif order.monobank_invoice_id %}
+            <div class="mb-6">
+                <p class="text-yellow-400 text-sm mb-3">Очікуємо оплату...</p>
+                <a href="https://pay.monobank.ua/{{ order.monobank_invoice_id|urlencode }}"
+                   target="_blank" rel="noopener"
+                   class="inline-block bg-hz-accent text-hz-dark font-bold uppercase tracking-widest px-8 py-4 rounded hover:bg-green-400 transition-all duration-300">
+                    Перейти до оплати
+                </a>
+            </div>
+            {% else %}
+            <div class="mb-6">
+                <p class="text-gray-400 text-sm">Спосіб оплати: Monobank. Ми зв'яжемося з вами для підтвердження.</p>
+            </div>
+            {% endif %}
+        {% endif %}
+
+        <a href="{% url 'pages:index' %}" class="inline-block text-hz-accent hover:underline mt-4">
+            ← Повернутися на головну
+        </a>
+
+        {% if order.comment %}
+        <div class="mt-6 bg-hz-dark/50 rounded p-4 text-left">
+            <p class="text-gray-500 text-sm">Коментар:</p>
+            <p class="text-gray-300 text-sm">{{ order.comment }}</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

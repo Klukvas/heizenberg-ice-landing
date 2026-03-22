@@ -1,0 +1,48 @@
+{% load static %}
+<header class="sticky top-0 z-50 bg-hz-dark/95 backdrop-blur-sm border-b border-hz-green-800/50" x-data="{ mobileOpen: false }">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <!-- Logo -->
+            <a href="{% url 'pages:index' %}" class="flex items-center">
+                <span class="font-display text-2xl text-hz-accent tracking-wider">HEIZENBERG ICE</span>
+            </a>
+
+            <!-- Navigation -->
+            <nav class="hidden md:flex items-center space-x-6 text-sm uppercase tracking-wider">
+                <a href="/#catalog" class="hover:text-hz-accent transition-colors">Каталог</a>
+                <a href="/#delivery" class="hover:text-hz-accent transition-colors">Доставка</a>
+                <a href="/#about" class="hover:text-hz-accent transition-colors">Про нас</a>
+                <a href="/#faq" class="hover:text-hz-accent transition-colors">FAQ</a>
+                <a href="{% url 'blog:post-list' %}" class="hover:text-hz-accent transition-colors">Блог</a>
+                <a href="/#contacts" class="hover:text-hz-accent transition-colors">Контакти</a>
+            </nav>
+
+            <div class="flex items-center space-x-4">
+                <!-- Cart Widget -->
+                <div id="cart-widget" aria-label="Кошик" hx-get="{% url 'orders:cart-widget' %}" hx-trigger="cartUpdated from:body" hx-swap="innerHTML">
+                    {% include 'partials/cart_widget.html' %}
+                </div>
+
+                <!-- Mobile menu button -->
+                <button @click="mobileOpen = !mobileOpen" aria-label="Відкрити мобільне меню" class="md:hidden text-gray-300 hover:text-hz-accent">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path x-show="!mobileOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        <path x-show="mobileOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div x-show="mobileOpen" x-transition class="md:hidden bg-hz-dark border-t border-hz-green-800/50">
+        <nav class="px-4 py-3 space-y-2 text-sm uppercase tracking-wider">
+            <a href="/#catalog" @click="mobileOpen=false" class="block py-2 hover:text-hz-accent transition-colors">Каталог</a>
+            <a href="/#delivery" @click="mobileOpen=false" class="block py-2 hover:text-hz-accent transition-colors">Доставка</a>
+            <a href="/#about" @click="mobileOpen=false" class="block py-2 hover:text-hz-accent transition-colors">Про нас</a>
+            <a href="/#faq" @click="mobileOpen=false" class="block py-2 hover:text-hz-accent transition-colors">FAQ</a>
+            <a href="{% url 'blog:post-list' %}" @click="mobileOpen=false" class="block py-2 hover:text-hz-accent transition-colors">Блог</a>
+            <a href="/#contacts" @click="mobileOpen=false" class="block py-2 hover:text-hz-accent transition-colors">Контакти</a>
+        </nav>
+    </div>
+</header>

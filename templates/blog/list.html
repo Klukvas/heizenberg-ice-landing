@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_head %}
+<meta name="description" content="{{ page_description }}">
+<meta property="og:title" content="{{ page_title }}">
+<meta property="og:description" content="{{ page_description }}">
+{% endblock %}
+
+{% block content %}
+<section class="py-16 px-4 min-h-screen">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="font-display text-5xl md:text-6xl text-center text-white tracking-widest mb-4">БЛОГ</h1>
+        <div class="w-24 h-1 bg-hz-accent mx-auto mb-4"></div>
+        <p class="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+            Корисні статті про лід, напої, зберігання та доставку
+        </p>
+
+        {% if posts %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for post in posts %}
+            <article class="bg-hz-green-900/30 border border-hz-green-800/50 rounded-lg overflow-hidden card-hover transition-all duration-300 flex flex-col">
+                <a href="{{ post.get_absolute_url }}">
+                    {% if post.image %}
+                    <div class="aspect-video overflow-hidden">
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}"
+                             class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                             loading="lazy">
+                    </div>
+                    {% else %}
+                    <div class="aspect-video bg-hz-green-900/60 flex items-center justify-center">
+                        <svg class="w-12 h-12 text-hz-green-700" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+                        </svg>
+                    </div>
+                    {% endif %}
+                </a>
+                <div class="p-5 flex flex-col flex-1">
+                    {% if post.published_at %}
+                    <time class="text-hz-accent text-xs font-mono mb-2" datetime="{{ post.published_at|date:'Y-m-d' }}">
+                        {{ post.published_at|date:'d.m.Y' }}
+                    </time>
+                    {% endif %}
+                    <h2 class="font-display text-xl text-white tracking-wide mb-2">
+                        <a href="{{ post.get_absolute_url }}" class="hover:text-hz-accent transition-colors">
+                            {{ post.title }}
+                        </a>
+                    </h2>
+                    <p class="text-gray-400 text-sm flex-1 mb-4 line-clamp-3">{{ post.excerpt }}</p>
+                    <a href="{{ post.get_absolute_url }}"
+                       class="text-hz-accent text-sm font-bold uppercase tracking-wider hover:underline">
+                        Читати →
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if posts.has_other_pages %}
+        <nav class="flex justify-center items-center space-x-2 mt-12" aria-label="Пагінація">
+            {% if posts.has_previous %}
+            <a href="?page={{ posts.previous_page_number }}"
+               class="px-4 py-2 bg-hz-green-900/50 border border-hz-green-800/50 rounded text-gray-300 hover:bg-hz-green-800 transition-colors">
+                ←
+            </a>
+            {% endif %}
+
+            {% for num in posts.paginator.page_range %}
+                {% if posts.number == num %}
+                <span class="px-4 py-2 bg-hz-accent text-hz-dark rounded font-bold">{{ num }}</span>
+                {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                <a href="?page={{ num }}"
+                   class="px-4 py-2 bg-hz-green-900/50 border border-hz-green-800/50 rounded text-gray-300 hover:bg-hz-green-800 transition-colors">
+                    {{ num }}
+                </a>
+                {% endif %}
+            {% endfor %}
+
+            {% if posts.has_next %}
+            <a href="?page={{ posts.next_page_number }}"
+               class="px-4 py-2 bg-hz-green-900/50 border border-hz-green-800/50 rounded text-gray-300 hover:bg-hz-green-800 transition-colors">
+                →
+            </a>
+            {% endif %}
+        </nav>
+        {% endif %}
+
+        {% else %}
+        <p class="text-center text-gray-500 py-20">Статей поки немає. Скоро будуть!</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load blog_filters %}
+
+{% block title %}{{ post.title }} — Heizenberg Ice{% endblock %}
+
+{% block extra_head %}
+<meta name="description" content="{{ post.excerpt }}">
+<meta property="og:title" content="{{ post.title }}">
+<meta property="og:description" content="{{ post.excerpt }}">
+<meta property="og:type" content="article">
+{% if post.image %}<meta property="og:image" content="{{ post.image.url }}">{% endif %}
+{% if post.published_at %}
+<meta property="article:published_time" content="{{ post.published_at|date:'c' }}">
+{% endif %}
+<meta property="article:author" content="{{ post.author }}">
+<link rel="canonical" href="{{ request.build_absolute_uri }}">
+{% endblock %}
+
+{% block content %}
+<article class="py-16 px-4 min-h-screen">
+    <div class="max-w-3xl mx-auto">
+        <!-- Breadcrumb -->
+        <nav class="text-sm text-gray-500 mb-8 font-mono">
+            <a href="{% url 'pages:index' %}" class="hover:text-hz-accent transition-colors">Головна</a>
+            <span class="mx-2">/</span>
+            <a href="{% url 'blog:post-list' %}" class="hover:text-hz-accent transition-colors">Блог</a>
+            <span class="mx-2">/</span>
+            <span class="text-gray-400">{{ post.title|truncatewords:5 }}</span>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="font-display text-4xl md:text-5xl text-white tracking-wider mb-4 leading-tight">
+                {{ post.title }}
+            </h1>
+            <div class="flex items-center space-x-4 text-sm text-gray-500">
+                {% if post.published_at %}
+                <time datetime="{{ post.published_at|date:'c' }}">
+                    {{ post.published_at|date:'d.m.Y' }}
+                </time>
+                {% endif %}
+                <span>·</span>
+                <span>{{ post.author }}</span>
+            </div>
+        </header>
+
+        <!-- Featured image -->
+        {% if post.image %}
+        <div class="mb-10 rounded-lg overflow-hidden border border-hz-green-800/50">
+            <img src="{{ post.image.url }}" alt="{{ post.title }}"
+                 class="w-full h-auto" loading="eager">
+        </div>
+        {% endif %}
+
+        <!-- Content -->
+        <div class="prose prose-invert prose-green max-w-none
+                    text-gray-300 leading-relaxed
+                    [&_h2]:font-display [&_h2]:text-3xl [&_h2]:text-white [&_h2]:tracking-wider [&_h2]:mt-12 [&_h2]:mb-4
+                    [&_h3]:font-display [&_h3]:text-2xl [&_h3]:text-white [&_h3]:tracking-wider [&_h3]:mt-8 [&_h3]:mb-3
+                    [&_p]:mb-4 [&_p]:text-gray-300
+                    [&_a]:text-hz-accent [&_a]:underline [&_a]:hover:text-green-400
+                    [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ul]:text-gray-300
+                    [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_ol]:text-gray-300
+                    [&_li]:mb-2
+                    [&_blockquote]:border-l-4 [&_blockquote]:border-hz-accent [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-400 [&_blockquote]:my-6
+                    [&_img]:rounded-lg [&_img]:my-6 [&_img]:border [&_img]:border-hz-green-800/50
+                    [&_code]:bg-hz-green-900/50 [&_code]:px-2 [&_code]:py-1 [&_code]:rounded [&_code]:text-hz-accent [&_code]:text-sm
+                    [&_pre]:bg-hz-green-900/30 [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:my-6 [&_pre]:border [&_pre]:border-hz-green-800/50
+                    [&_table]:w-full [&_table]:my-6 [&_th]:bg-hz-green-900/50 [&_th]:p-3 [&_th]:text-left [&_th]:text-white [&_td]:p-3 [&_td]:border-t [&_td]:border-hz-green-800/50
+                    [&_hr]:border-hz-green-800/50 [&_hr]:my-8">
+            {{ post.content|safe_html }}
+        </div>
+
+        <!-- Share / back -->
+        <div class="mt-12 pt-8 border-t border-hz-green-800/50 flex justify-between items-center">
+            <a href="{% url 'blog:post-list' %}" class="text-hz-accent hover:underline text-sm">
+                ← Усі статті
+            </a>
+        </div>
+
+        <!-- Related posts -->
+        {% if related_posts %}
+        <div class="mt-16">
+            <h2 class="font-display text-3xl text-white tracking-widest mb-8">ЧИТАЙТЕ ТАКОЖ</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {% for rp in related_posts %}
+                <a href="{{ rp.get_absolute_url }}" class="bg-hz-green-900/30 border border-hz-green-800/50 rounded-lg overflow-hidden card-hover transition-all duration-300 block">
+                    {% if rp.image %}
+                    <div class="aspect-video overflow-hidden">
+                        <img src="{{ rp.image.url }}" alt="{{ rp.title }}" class="w-full h-full object-cover" loading="lazy">
+                    </div>
+                    {% endif %}
+                    <div class="p-4">
+                        <h3 class="font-display text-lg text-white tracking-wide hover:text-hz-accent transition-colors">{{ rp.title }}</h3>
+                        {% if rp.published_at %}
+                        <time class="text-gray-500 text-xs">{{ rp.published_at|date:'d.m.Y' }}</time>
+                        {% endif %}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</article>
+
+<!-- Schema.org Article -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "{{ post.title|escapejs }}",
+    "description": "{{ post.excerpt|escapejs }}",
+    {% if post.image %}"image": "{{ post.image.url|escapejs }}",{% endif %}
+    "author": {
+        "@type": "Person",
+        "name": "{{ post.author|escapejs }}"
+    },
+    {% if post.published_at %}"datePublished": "{{ post.published_at|date:'c' }}",{% endif %}
+    "dateModified": "{{ post.updated_at|date:'c' }}",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Heizenberg Ice"
+    }
+}
+</script>
+{% endblock %}

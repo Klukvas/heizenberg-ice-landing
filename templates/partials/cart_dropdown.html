@@ -1,0 +1,49 @@
+<div class="space-y-4">
+    {% if cart_items %}
+        {% for item in cart_items %}
+        <div class="flex items-center space-x-4 bg-hz-green-900/20 p-3 rounded-lg border border-hz-green-800/30">
+            {% if item.product.image %}
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-16 h-16 object-cover rounded" loading="lazy">
+            {% endif %}
+            <div class="flex-1">
+                <h4 class="text-white text-sm font-bold">{{ item.product.name }}</h4>
+                <p class="text-hz-accent text-sm">{{ item.price }} ₴</p>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button
+                    aria-label="Зменшити кількість {{ item.product.name }}"
+                    hx-post="{% url 'orders:cart-update-htmx' item.product.id %}"
+                    hx-vals='{"quantity": "{{ item.quantity|add:"-1" }}"}'
+                    hx-target="#cart-content"
+                    hx-swap="innerHTML"
+                    class="w-7 h-7 bg-hz-green-800 hover:bg-hz-green-700 rounded text-center text-sm">−</button>
+                <span class="text-white text-sm w-6 text-center">{{ item.quantity }}</span>
+                <button
+                    aria-label="Збільшити кількість {{ item.product.name }}"
+                    hx-post="{% url 'orders:cart-update-htmx' item.product.id %}"
+                    hx-vals='{"quantity": "{{ item.quantity|add:"1" }}"}'
+                    hx-target="#cart-content"
+                    hx-swap="innerHTML"
+                    class="w-7 h-7 bg-hz-green-800 hover:bg-hz-green-700 rounded text-center text-sm">+</button>
+            </div>
+            <button
+                aria-label="Видалити {{ item.product.name }} з кошика"
+                hx-post="{% url 'orders:cart-remove-htmx' item.product.id %}"
+                hx-target="#cart-content"
+                hx-swap="innerHTML"
+                class="text-red-500 hover:text-red-400 text-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+            </button>
+        </div>
+        {% endfor %}
+
+        <div class="border-t border-hz-green-800/50 pt-3 flex justify-between items-center">
+            <span class="text-gray-400">Разом:</span>
+            <span class="text-hz-accent font-bold text-lg">{{ cart.get_total }} ₴</span>
+        </div>
+    {% else %}
+        <p class="text-gray-500 text-center py-4">Кошик порожній</p>
+    {% endif %}
+</div>
