@@ -25,19 +25,22 @@ for var in SECRET_KEY DB_PASSWORD DB_NAME DB_USER ALLOWED_HOSTS CELERY_BROKER_UR
     fi
 done
 
-echo "[1/5] Pulling image..."
+echo "[1/6] Pulling image..."
 docker pull "${DOCKER_IMAGE}"
 
-echo "[2/5] Updating compose..."
+echo "[2/6] Updating compose..."
 export DOCKER_IMAGE="${DOCKER_IMAGE}"
 
-echo "[3/5] Running migrations..."
+echo "[3/6] Running migrations..."
 docker compose run --rm app python manage.py migrate --noinput
 
-echo "[4/5] Collecting static files..."
+echo "[4/6] Creating superuser (skips if already exists)..."
+docker compose run --rm app python manage.py createsuperuser --noinput 2>/dev/null || echo "  Superuser already exists, skipping."
+
+echo "[5/6] Collecting static files..."
 docker compose run --rm app python manage.py collectstatic --noinput
 
-echo "[5/5] Starting services..."
+echo "[6/6] Starting services..."
 docker compose up -d --remove-orphans
 
 echo ""

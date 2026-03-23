@@ -118,6 +118,7 @@ jobs:
             export DOCKER_IMAGE="${DEPLOY_IMAGE}"
 
             docker compose run --rm app python manage.py migrate --noinput
+            docker compose run --rm app python manage.py createsuperuser --noinput 2>/dev/null || echo "Superuser exists"
             docker compose run --rm app python manage.py collectstatic --noinput
 
             docker compose up -d --remove-orphans
