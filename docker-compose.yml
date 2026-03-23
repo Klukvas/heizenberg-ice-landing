@@ -1,6 +1,6 @@
 services:
   app:
-    image: ${DOCKER_IMAGE:-heizenberg/ice:latest}
+    image: ${DOCKER_IMAGE:-klukvas/heizenberg-ice:latest}
     container_name: heizenberg_app
     restart: unless-stopped
     env_file: .env
@@ -16,7 +16,7 @@ services:
       - heizenberg_net
 
   celery:
-    image: ${DOCKER_IMAGE:-heizenberg/ice:latest}
+    image: ${DOCKER_IMAGE:-klukvas/heizenberg-ice:latest}
     container_name: heizenberg_celery
     restart: unless-stopped
     env_file: .env

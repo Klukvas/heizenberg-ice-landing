@@ -6,7 +6,7 @@ set -euo pipefail
 #          ./deploy.sh sha-abc1234
 
 IMAGE_TAG="${1:-latest}"
-DOCKER_IMAGE="${DOCKER_IMAGE:-heizenberg/ice}:${IMAGE_TAG}"
+DOCKER_IMAGE="${DOCKER_IMAGE:-klukvas/heizenberg-ice}:${IMAGE_TAG}"
 
 echo "=== Heizenberg Ice Deploy ==="
 echo "Image: ${DOCKER_IMAGE}"
